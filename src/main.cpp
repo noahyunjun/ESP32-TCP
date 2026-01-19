@@ -128,14 +128,26 @@ void setup() {
   // 이더넷 시작
   ETH.begin(ETH_ADDR, ETH_POWER_PIN, ETH_MDC_PIN, ETH_MDIO_PIN, ETH_TYPE, ETH_CLK_MODE);
   ETH.config(ip, gw, mask, dns);
-  
-  // 레지스터 초기화
-  initRegisterMap_Socomec_Tuned();
 
   // Modbus 설정
   mb.registerWorker(UNIT_ID, 0x03, FC03);
   mb.start(MODBUS_PORT, 4, 2000);
 
+  #ifdef MODE_SOCOMEC
+    // 1. 소코멕 모드일 때
+    initRegisterMap_Socomec_Tuned();
+    Serial.println("--- [MODE] Socomec E14 Simulator Started ---");
+  #elif defined(MODE_JANITZA)
+    // 2. 야니짜 모드일 때 (추후 추가용)
+    // initRegisterMap_Janitza_Tuned();
+    Serial.println("--- [MODE] Janitza UMG Simulator Started ---");
+  #else
+    // 3. 아무것도 정의되지 않았을 때 (초기 기본 세팅)
+    // 아무런 데이터도 없는 빈 레지스터 상태이거나 기본값 세팅
+    Serial.println("--- [MODE] Initial Basic Mode (No specific meter) ---");
+  #endif
+
+  
   Serial.println("--- ESP32 Tuned for OpenEMS Identification ---");
 }
 
