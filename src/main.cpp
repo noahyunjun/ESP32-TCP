@@ -81,40 +81,29 @@ static void initRegisterMap() {
   setU16(0xC351, 0x004F); // 'O'
   setU16(0xC352, 0x0043); // 'C'
   setU16(0xC353, 0x004F); // 'O'
-  setString_1charPerWord(0xC38A, "countis ", 8);
-
-  // 2) 2char/word 방식(16 chars): "countis e14"를 16바이트 공간에 넣기
-  //    (OpenEMS 구현이 2char/word로 해석하는 경우 대비)
   setString_2charPerWord(0xC38A, "countis e14", 8);
 
-  setString_2charPerWord(0xC542, "SOCOMEC", 8);
-  setString_2charPerWord(0xC550, "COUNTIS E14", 8);
-
   // ---- Measurements (폴링되는 실제 주소들)
-  setU32(0xC558, 2300);
-  setU32(0xC55E, 500);
-  setU32(0xC560, 12.3);
-  setS32(0xC568, 500);
-  setS32(0xC56A, 0);
-  setU32(0xC702, 1234.5);
-  setU32(0xC708, 0);
+  setU32(0xC558, 2300); // Voltage
+  setU32(0xC55E, 500); // Frequency
+  setU32(0xC560, 12.3); // Current
+  setS32(0xC568, 500); // Active Power
+  setS32(0xC56A, 0); // Reactive Power
+  setU32(0xC702, 1234.5); // Energy
+  setU32(0xC708, 0); // Energy
 }
 
-// -------------------------
 // 5) Live update (optional)
-// -------------------------
 static void updateValuesTick() {
   static uint32_t t0 = millis();
   double sec = (millis() - t0) / 1000.0;
 
   // 200~800W 흔들기 (가정: /10이면 raw는 *10)
   double p_w = 500.0 + 300.0 * sin(sec * 0.4);
-  setS32(0xC568, (int32_t)(p_w * 10.0));  // /10 가정
+  setS32(0xC568, (int32_t)(p_w));
 }
 
-// -------------------------
 // FC03: Read Holding Registers (Socomec driver uses FC3)
-// -------------------------
 ModbusMessage FC03(ModbusMessage request) {
   uint16_t startAddr = 0;
   uint16_t count = 0;
@@ -137,6 +126,10 @@ ModbusMessage FC03(ModbusMessage request) {
 }
 
 #elif defined(MODE_JANITZA)
+//1. Identify
+//2. Polling
+
+
 
 static void initRegisterMap() {
   Serial.println("[MAP] Janitza stub (not implemented)");
