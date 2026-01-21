@@ -4,11 +4,12 @@
 // Driver factory functions (defined in driver .cpp files)
 const meter_driver_t* get_socomec_driver();
 const meter_driver_t* get_janitza_driver();
+const meter_driver_t* get_acme_driver();
 
-#if defined(MODE_SOCOMEC_E14) && defined(MODE_JANITZA_UMG104)
-#error "Select exactly one driver: MODE_SOCOMEC_E14 or MODE_JANITZA_UMG104"
-#elif !defined(MODE_SOCOMEC_E14) && !defined(MODE_JANITZA_UMG104)
-#error "No driver selected: define MODE_SOCOMEC_E14 or MODE_JANITZA_UMG104"
+#if (defined(MODE_SOCOMEC_E14) + defined(MODE_JANITZA_UMG104) + defined(MODE_ACME_X100)) > 1
+#error "Select exactly one driver: MODE_SOCOMEC_E14, MODE_JANITZA_UMG104, or MODE_ACME_X100"
+#elif !defined(MODE_SOCOMEC_E14) && !defined(MODE_JANITZA_UMG104) && !defined(MODE_ACME_X100)
+#error "No driver selected: define MODE_SOCOMEC_E14, MODE_JANITZA_UMG104, or MODE_ACME_X100"
 #endif
 
 static const meter_driver_t* active_driver() {
@@ -16,6 +17,8 @@ static const meter_driver_t* active_driver() {
   return get_socomec_driver();
 #elif defined(MODE_JANITZA_UMG104)
   return get_janitza_driver();
+#elif defined(MODE_ACME_X100)
+  return get_acme_driver();
 #endif
 }
 
